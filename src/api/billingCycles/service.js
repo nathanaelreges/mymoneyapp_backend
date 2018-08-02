@@ -1,9 +1,17 @@
-const BillingCycle = require('./model')
+const billingCycle = require('./model')
 
-BillingCycle.methods(['get', 'post', 'put', 'delete'])
-BillingCycle.updateOptions({new: true, applyValidators: true})
+billingCycle.methods(['get', 'post', 'put', 'delete'])
+billingCycle.updateOptions({new: true, applyValidators: true})
 
-module.exports = BillingCycle
+billingCycle.route('count', (req, res, next) => {
+   billingCycle.estimatedDocumentCount({}, (err, result)=>{
+      res.json({result})
+   })
+})
+
+
+
+module.exports = billingCycle
 
 
 
