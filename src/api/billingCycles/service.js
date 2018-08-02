@@ -1,11 +1,20 @@
 const billingCycle = require('./model')
+const errorHandler = require('../common/errorHandler')
 
 billingCycle.methods(['get', 'post', 'put', 'delete'])
-billingCycle.updateOptions({new: true, applyValidators: true})
+billingCycle.updateOptions({new: true, runValidators: true})
+
+
+billingCycle.after('put', errorHandler).after('post', errorHandler)
 
 billingCycle.route('count', (req, res, next) => {
    billingCycle.estimatedDocumentCount({}, (err, result)=>{
-      res.json({result})
+      if(err) {
+         res.status(400).send({erros: [err]})
+      }
+      else {
+         res.send({result})
+      }
    })
 })
 
@@ -17,8 +26,11 @@ billingCycle.route('summary', (req, res, next) => {
    },{
       $project: {_id: 0, credits: 1, debits: 1}
    }])
-      .then((result)=>{
-         res.json(result)
+      .then(result=>{
+         res.send(result[0])
+      })
+      .catch(err=>{
+         res.status(400).send({erros: [err]})
       })
 })
 
