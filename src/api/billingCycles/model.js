@@ -9,7 +9,7 @@ const creditSchema = new mongoose.Schema({
 
 const debitSchema = new mongoose.Schema({
    name: {type: String, required: true},
-   state: {type: String, uppercase: true, enum: ['PENDENTE, PAGO']},
+   state: {type: String, uppercase: true, enum: ['PENDENTE', 'PAGO', 'AGENDADO']},
    value: {type: Number, min: 0, required: true}
 })
 
@@ -22,4 +22,4 @@ const billingSchema = new mongoose.Schema({
    debits: [debitSchema]
 })
 
-module.exports = restful.model('billigCycle', billingSchema)
+module.exports = restful.model('BilligCycle', billingSchema)

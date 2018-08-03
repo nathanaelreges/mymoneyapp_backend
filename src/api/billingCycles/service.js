@@ -10,7 +10,7 @@ billingCycle.after('put', errorHandler).after('post', errorHandler)
 billingCycle.route('count', (req, res, next) => {
    billingCycle.estimatedDocumentCount({}, (err, result)=>{
       if(err) {
-         res.status(400).send({erros: [err]})
+         res.status(500).send({erros: [err]})
       }
       else {
          res.send({result})
@@ -27,10 +27,10 @@ billingCycle.route('summary', (req, res, next) => {
       $project: {_id: 0, credits: 1, debits: 1}
    }])
       .then(result=>{
-         res.send(result[0])
+         res.send(result[0] || {credits: 0, debits: 0})
       })
       .catch(err=>{
-         res.status(400).send({erros: [err]})
+         res.status(500).send({erros: [err]})
       })
 })
 
