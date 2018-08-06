@@ -9,4 +9,7 @@ module.exports = (req, res, next)=>{
       })
       res.status(400).send({erros})
    }
+   else {
+      next()
+   }
 }
