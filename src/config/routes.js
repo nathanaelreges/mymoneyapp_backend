@@ -1,5 +1,5 @@
 const express = require('express')
-const billingCycle = require('../api/billingCycles/service')
+const billingCycle = require('../api/billingCycles/bCService')
 
 module.exports = (server) => {
 

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const User = require('./UserModel')
+const User = require('./userModel')
 const secret = require('../../.env').authSecret
 
 
