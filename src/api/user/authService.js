@@ -44,26 +44,16 @@ const login = (req, res, next) => {
 }
 
 
-const validateToken = (res, req, next) => {
+const validateToken = (req, res, next) => {
    const token = req.body.token || ''
 
    jwt.verify(token, secret, (err, decoded)=>{
       res.status(200).json({ valid: !err })
    })
-
-   /*jwt.verify(token, secret, (err, decoded)=>{
-      if(decoded) {
-         res.body.user = decoded
-         res.status(200).send()
-      }
-      else {
-         res.status(400).json({errors: ['Token de autenticação invalido.']})
-      }
-   })*/
 }
 
 
-const sign = async function (res, req, next) {
+const sign = async function (req, res, next) {
    const user = req.body.user || ''
    const email = req.body.email || ''
    const password = req.body.password || ''
@@ -101,7 +91,7 @@ const sign = async function (res, req, next) {
                sendDBerrors(res, err)
             }
             else{
-               login(res, req, next)
+               login(req, res, next)
             }
          })
          
