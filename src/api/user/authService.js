@@ -19,26 +19,24 @@ const login = (req, res, next) => {
    const email = req.body.email || ''
    const password = req.body.password || ''
 
-   User.findOne({ email }, (err, user)=>{
+   User.findOne({ email }, async function (err, user) {
       if(err){
          sendDBerrors(res, err)
       }
       else
       if(user) {
-         bcrypt.compare(password, user.password).then((err, res)=>{
-            if(res) {
-               jwt.sign(user, secret, {expiresIn: '3 days'}, (err, token)=>{
-                  const { name, email } = user
-                  res.status(200).json({ token, name, email })
-               })
-            }
-            else {
-               res.json({errors: ['Senha/Usuário invalidos.']})
-            }
-         })
+         const match = await bcrypt.compare(password, user.password)
+         if(match) {
+            const { name, email } = user
+            const token = jwt.sign({ name, email }, secret, {expiresIn: '3 days'})
+            res.status(200).json({ token, name, email })
+         }
+         else {
+            res.json({errors: ['Senha/Usuário invalidos.']})
+         }
       }
       else {
-         res.json({errors: ['Senha/Usuário invalidos.']})
+         res.json({errors: ['Senha/Usuário invalidos']})
       }
    })
 }
@@ -54,7 +52,7 @@ const validateToken = (req, res, next) => {
 
 
 const sign = async function (req, res, next) {
-   const user = req.body.user || ''
+   const name = req.body.name || ''
    const email = req.body.email || ''
    const password = req.body.password || ''
    const confirmPassword = req.body.confirmPassword || ''
@@ -63,12 +61,12 @@ const sign = async function (req, res, next) {
       res.status(400).send({errors: ['O e-mail informado está inválido.']})
    }
 
-   if(!password.match(passwordRegex)){
+   /*if(!password.match(passwordRegex)){
       res.status(400).send({errors: ['Senha precisar ter: uma letra maiúscula, uma letra minúscula, ' +
       'um número, uma caractere especial(@#$ %) e tamanho entre 6-20.']})
-   }
+   }*/
 
-   User.findOne({ user }, (err, user)=>{
+   User.findOne({ email },  async function (err, user) {
       if(err){
          sendDBerrors(res, err)
       }
@@ -77,15 +75,15 @@ const sign = async function (req, res, next) {
          res.json({errors: ['Usuário já cadastrado.']})
       }
       else {
-         const passwordHash = await bcrypt.hash(password)
-         const match = bcrypt.compare(confirmPassword, passwordHash)
+         const passwordHash = await bcrypt.hash(password, 3)
+         const match = await bcrypt.compare(confirmPassword, passwordHash)
          
          if(!match) {
             res.json({errors: ['Confirmação de senha invalida.']})
             return
          }
          
-         const newUser = new User({user, email, password: passwordHash})
+         const newUser = new User({name, email, password: passwordHash})
          newUser.save(err => {
             if(err) {
                sendDBerrors(res, err)
